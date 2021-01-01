@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "730154152080",
+    "project_id": "tinyhabits-1d077",
+    "storage_bucket": "tinyhabits-1d077.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730154152080:android:5048bc2b739c170a326815",
+        "android_client_info": {
+          "package_name": "com.example.tinyhabits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "730154152080-d5rip5fvklomjdvoendp4ck50andm3dn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg-_g2oXvkKPDvFA8MU9ST_kY934g1uLM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730154152080-d5rip5fvklomjdvoendp4ck50andm3dn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "730154152080-6jb3bh6nim675577b3gua42s6csemg41.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tinyhabits"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
