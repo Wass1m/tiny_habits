@@ -179,6 +179,10 @@ class Collection<T> {
   Future upsert(Map data) {
     return ref.add(data);
   }
+
+  Future deleteById(String id) {
+    return ref.doc(id).delete();
+  }
 }
 
 class UserData<T> {

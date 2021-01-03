@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:tinyhabits/home/edit_habit.dart';
 import 'package:tinyhabits/models/goal.dart';
 import 'package:tinyhabits/models/habit_provider.dart';
 import 'package:tinyhabits/services/firebase/database.dart';
@@ -18,6 +20,31 @@ class _TodayHabitState extends State<TodayHabit> {
   DateTime selectedDate = DateTime.now();
 
   Collection<Habit> habits = Collection<Habit>(path: 'habits');
+
+  SlidableController slidableController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    slidableController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
+    super.initState();
+  }
+
+  Animation<double> _rotationAnimation;
+  Color _fabColor = Colors.blue;
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
+    setState(() {
+      _rotationAnimation = slideAnimation;
+    });
+  }
+
+  void handleSlideIsOpenChanged(bool isOpen) {
+    setState(() {
+      _fabColor = isOpen ? Colors.green : Colors.blue;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,14 +182,17 @@ class _TodayHabitState extends State<TodayHabit> {
                       Container(
                         height: 300,
                         child: ListView.builder(
-                            itemCount: Provider.of<HabitProvider>(
+                          itemCount: Provider.of<HabitProvider>(
+                            context,
+                          ).pendingList.length,
+                          itemBuilder: (BuildContext context, index) {
+                            var habitP = Provider.of<HabitProvider>(
                               context,
-                            ).pendingList.length,
-                            itemBuilder: (BuildContext context, index) {
-                              var habitP = Provider.of<HabitProvider>(
-                                context,
-                              ).pendingList[index];
-                              return Padding(
+                            ).pendingList[index];
+                            return Slidable(
+                              actionPane: SlidableDrawerActionPane(),
+                              actionExtentRatio: 0.25,
+                              child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 10),
                                 child: Container(
@@ -209,8 +239,117 @@ class _TodayHabitState extends State<TodayHabit> {
                                     ],
                                   ),
                                 ),
-                              );
-                            }),
+                              ),
+                              actions: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditHabit(
+                                          habit: habitP,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Container(
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.edit,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Edit', style: WhiteSubtitle)
+                                            ],
+                                          ),
+                                        )),
+                                  ),
+                                )
+                              ],
+                              secondaryActions: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    return showDialog<bool>(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text('Delete'),
+                                          content: Text('Item will be deleted'),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: Text('Cancel'),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                            ),
+                                            FlatButton(
+                                              child: Text('Confirm'),
+                                              onPressed: () async {
+                                                Collection<Habit> habRef =
+                                                    Collection<Habit>(
+                                                        path: 'habits');
+
+                                                await habRef
+                                                    .deleteById(habitP.id)
+                                                    .then((_) {
+                                                  Provider.of<HabitProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .removePending(habitP);
+
+                                                  Navigator.of(context)
+                                                      .pop(true);
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Container(
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          color: Colors.redAccent,
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Delete',
+                                                  style: WhiteSubtitle)
+                                            ],
+                                          ),
+                                        )),
+                                  ),
+                                )
+                              ],
+                            );
+                            ;
+                          },
+                        ),
                       ),
                       SizedBox(
                         height: 10,
@@ -276,7 +415,7 @@ class _TodayHabitState extends State<TodayHabit> {
                   ),
                 );
               } else
-                return NoHabit();
+                return Container(height: 520, child: NoHabit());
             } else
               return Center(child: CircularProgressIndicator());
           },
@@ -300,27 +439,29 @@ class NoHabit extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: [],
-                ),
-                Text('Create new habit',
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [],
+                  ),
+                  Text('Create new habit',
+                      textAlign: TextAlign.center,
+                      style: BigBoldHeading.copyWith(fontSize: 29)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Your current habits will come here, create \n one by tapping on the plus button!',
                     textAlign: TextAlign.center,
-                    style: BigBoldHeading.copyWith(fontSize: 29)),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Your current habits will come here, create \n one by tapping on the plus button!',
-                  textAlign: TextAlign.center,
-                  style: GreySubtitle.copyWith(fontSize: 16),
-                ),
-              ],
+                    style: GreySubtitle.copyWith(fontSize: 16),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(

@@ -5,6 +5,7 @@ import 'package:tinyhabits/services/firebase/database.dart';
 class HabitProvider extends ChangeNotifier {
   List<Habit> _completed = [];
   List<Habit> _pending = [];
+  List<Habit> _deleted = [];
 
   void addToComplete(Habit habit) async {
     Document<Habit> docRef = Document<Habit>(path: 'habits/${habit.id}');
@@ -19,13 +20,33 @@ class HabitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removePending(Habit habit) {
+    if (_pending.contains(habit)) {
+      _deleted.add(habit);
+      _pending.remove(habit);
+    }
+    print('deletion of pending');
+    print(_pending);
+    notifyListeners();
+  }
+
+  void removeComplete(Habit habit) {
+    if (_completed.contains(habit)) {
+      _deleted.add(habit);
+      _completed.remove(habit);
+    }
+    notifyListeners();
+  }
+
   void setPending(Habit habit) {
-    if (!_pending.contains(habit)) _pending.add(habit);
+    if (!_pending.contains(habit) && !_deleted.contains(habit))
+      _pending.add(habit);
     notifyListeners();
   }
 
   void setCompleted(Habit habit) {
-    if (!_completed.contains(habit)) _completed.add(habit);
+    if (!_completed.contains(habit) && !_deleted.contains(habit))
+      _completed.add(habit);
     notifyListeners();
   }
 
@@ -35,6 +56,7 @@ class HabitProvider extends ChangeNotifier {
   void reset() {
     _pending = [];
     _completed = [];
+    _deleted = [];
     notifyListeners();
   }
 
