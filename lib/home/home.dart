@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 35,
         onTap: (value) {
           setState(() {
-            HapticFeedback.vibrate();
+            // HapticFeedback.vibrate();
             _currentIndex = value;
           });
 

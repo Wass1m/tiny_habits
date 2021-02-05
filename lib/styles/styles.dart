@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 // const Color kPrimaryColor = Color(0xFF1FCC79);
-const Color kPrimaryColor = Color(0xFF438DFF);
-const Color kSecondaryColor = Color(0xFFA95EFA);
+// const Color kPrimaryColor = Color(0xFF438DFF);
+const Color kPrimaryColor = Color(0xff02075d);
+// const Color kSecondaryColor = Color(0xFFA95EFA);
+const Color kSecondaryColor = Color(0xff02075d);
+
 const Color kDarkBlue = Color(0xFF26323E);
 const Color kCyanBlue = Color(0xFF1FECC7);
 const Color kPurple = Color(0xFFC41EDF);
@@ -21,6 +24,8 @@ const Color SuccessGreen = Color(0xFF04CC6C);
 
 ///status bar color, set as white rn
 const Color StatusBarColor = Color(0xFFFFFFFF);
+
+const Color DarkNavyBlue = Color(0xff02075d);
 
 Color inactiveIconGrey = Colors.black.withOpacity(0.3);
 

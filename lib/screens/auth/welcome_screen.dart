@@ -13,10 +13,17 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Image(
-                image: AssetImage(
-                  'assets/images/phone.png',
-                ),
+              child: Column(
+                children: [
+                  Image(
+                    image: AssetImage(
+                      'assets/images/logoMorning.jpg',
+                    ),
+                  ),
+                  Text('Rise and Grind',
+                      textAlign: TextAlign.center,
+                      style: BigBoldHeading.copyWith(fontSize: 20)),
+                ],
               ),
             ),
             Padding(
@@ -25,10 +32,7 @@ class WelcomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [],
-                  ),
-                  Text('Practice & track',
+                  Text('Start setting goals',
                       textAlign: TextAlign.center,
                       style: BigBoldHeading.copyWith(fontSize: 29)),
                   SizedBox(
@@ -65,10 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                           begin: Alignment.centerLeft,
                           end: Alignment
                               .centerRight, // 10% of the width, so there are ten blinds.
-                          colors: [
-                            kPrimaryColor,
-                            kPrimaryColor
-                          ], // red to yellow
+                          colors: [DarkNavyBlue, DarkNavyBlue], // red to yellow
                           tileMode: TileMode
                               .repeated, // repeats the gradient over the canvas
                         ),

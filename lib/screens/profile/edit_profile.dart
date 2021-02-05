@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:tinyhabits/models/profile.dart';
 import 'package:tinyhabits/screens/auth/register.dart';
 import 'package:tinyhabits/services/firebase/auth.dart';
+import 'package:tinyhabits/services/firebase/global.dart';
 import 'package:tinyhabits/styles/styles.dart';
 import 'package:tinyhabits/wrapper.dart';
 
-class LoginScreen extends StatefulWidget {
+class EditProfile extends StatefulWidget {
+  final Profile profile;
+
+  const EditProfile({Key key, this.profile}) : super(key: key);
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _EditProfileState createState() => _EditProfileState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
 
   AuthService _auth = AuthService();
-  final TextEditingController _email = TextEditingController();
+  final TextEditingController _name = TextEditingController();
 
   final TextEditingController _pass = TextEditingController();
+  final TextEditingController _confirm = TextEditingController();
 
   bool _isLoading = false;
   bool loadingGoogle = false;
@@ -24,6 +30,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String _error = '';
 
   bool hidden = true;
+
+  @override
+  void initState() {
+    _name.text = widget.profile.fullName;
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Let\'s Sign You In',
+                        'Edit your account',
                         style: BigBoldHeading,
                       ),
                     ),
@@ -81,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Now starting setting your mini goals!',
+                        'Make the changes you want!',
                         style: GreySubtitle.copyWith(fontSize: 16),
                       ),
                     ),
@@ -94,24 +107,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         children: [
                           TextFormField(
-                            controller: _email,
-                            keyboardType: TextInputType.emailAddress,
+                            controller: _name,
                             autofillHints: [
-                              AutofillHints.email,
+                              AutofillHints.name,
                             ],
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.email),
-                              hintText: 'Email',
+                              prefixIcon: Icon(Icons.person),
+                              hintText: 'New Username',
                             ),
-                            validator: (String value) {
-                              if (value == '') {
-                                return 'This field is required';
-                              }
-                              if (!RegExp(
-                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-                              ).hasMatch(value)) {
-                                return 'Please enter correct email';
-                              }
+                            validator: (value) {
+                              // if (value == '') {
+                              //   return 'This field is required';
+                              // }
                               return null;
                             },
                           ),
@@ -124,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscuringCharacter: "*",
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.lock),
-                              hintText: 'Password',
+                              hintText: 'New Password',
                               suffixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -139,11 +146,44 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             validator: (value) {
-                              if (value == '') {
-                                return 'This field is required';
-                              }
-                              if (value.length < 8) {
-                                return 'Password length must be atleast 8 characters long';
+                              // if (value == '') {
+                              //   return 'This field is required';
+                              // }
+                              // if (value.length < 8) {
+                              //   return 'Password length must be atleast 8 characters long';
+                              // }
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextFormField(
+                            controller: _confirm,
+                            obscureText: hidden,
+                            obscuringCharacter: "*",
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.lock),
+                              hintText: 'Confirm Password',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    hidden = !hidden;
+                                  });
+                                },
+                                icon: Icon(
+                                  hidden
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              // if (value == '') {
+                              //   return 'This field is required';
+                              // }
+                              if (value != _pass.text) {
+                                return 'Passwords dont match';
                               }
                               return null;
                             },
@@ -177,43 +217,64 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _isLoading = true;
                                   });
 
-                                  var data = {
-                                    "email": _email.text,
-                                    "password": _pass.text,
-                                  };
+                                  var result;
+                                  var resultPass;
 
-                                  print(data);
+                                  if (_pass.text == '') {
+                                    var data = {
+                                      "fullName": _name.text,
+                                    };
 
-                                  var result =
-                                      await _auth.signInWithEmailandPassword(
-                                          _email.text, _pass.text);
+                                    result =
+                                        await Global.profileRef.upsert(data);
 
-                                  if (result == null) {
-                                    print(
-                                        'ERROR LOGIN WITH EMAIL AND PASSWORD');
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-
-                                    if (result is String) {
+                                    if (result == null) {
+                                      print('ERROR CHANGING SETTINGS');
                                       setState(() {
-                                        _error = result;
+                                        _isLoading = false;
                                       });
                                     } else {
-                                      Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  WrapperUser()),
-                                          (route) => false);
-                                      // Navigator.push(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (context) => WrapperUser()));
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+
+                                      if (result is String) {
+                                        setState(() {
+                                          _error = result;
+                                        });
+                                      } else {
+                                        Navigator.pop(context);
+                                      }
+                                    }
+                                  } else if (_pass.text != '') {
+                                    var data = {
+                                      "fullName": _name.text,
+                                    };
+
+                                    resultPass =
+                                        await _auth.changePassword(_pass.text);
+
+                                    result =
+                                        await Global.profileRef.upsert(data);
+
+                                    if (result == null || resultPass == null) {
+                                      print('ERROR CHANGING SETTINGS PASSWORD');
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+
+                                      if (result is String ||
+                                          resultPass is String) {
+                                        setState(() {
+                                          _error = resultPass;
+                                        });
+                                      } else {
+                                        Navigator.pop(context);
+                                      }
                                     }
                                   }
 
@@ -227,91 +288,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(),
-                                  Text('SIGN IN'),
+                                  Text('CHANGE SETTINGS'),
                                   Icon(Icons.exit_to_app)
                                 ],
                               ),
                             ),
                           ),
-                    MaterialButton(
-                      enableFeedback: false,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RegScreen()));
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          style: GreySubtitle,
-                          text: "DON'T HAVE AN ACCOUNT? ",
-                          children: [
-                            TextSpan(
-                              style: GreySubtitle.copyWith(
-                                decoration: TextDecoration.underline,
-                              ),
-                              text: "SIGN UP",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+
                     SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    // loadingGoogle == true
-                    //     ? CircularProgressIndicator()
-                    //     : Container(
-                    //   width: MediaQuery.of(context).size.width,
-                    //   height: 45,
-                    //   child: RaisedButton(
-                    //     elevation: 0,
-                    //     textColor: Colors.white,
-                    //     color: Colors.blue,
-                    //     onPressed: () async {
-                    //       setState(() {
-                    //         loadingGoogle = true;
-                    //       });
-                    //
-                    //       var result = await _auth.signUpWithGoogle();
-                    //       if (result == null) {
-                    //         setState(() {
-                    //           loadingGoogle = false;
-                    //         });
-                    //         print('GOOGLE SIGN IN IN ERROR');
-                    //       } else {
-                    //         setState(() {
-                    //           loadingGoogle = false;
-                    //         });
-                    //         Navigator.pop(context);
-                    //         // Navigator.push(
-                    //         //     context,
-                    //         //     MaterialPageRoute(
-                    //         //         builder: (context) => HomeScreen()));
-                    //       }
-                    //
-                    //       setState(() {
-                    //         loadingGoogle = false;
-                    //       });
-                    //     },
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         Text('LOGIN WITH GOOGLE'),
-                    //         SizedBox(
-                    //           width: 10,
-                    //         ),
-                    //         Icon(
-                    //           FontAwesomeIcons.google,
-                    //           size: 18,
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

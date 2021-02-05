@@ -107,6 +107,7 @@ class Collection<T> {
 
   Future<List<T>> getDataById(String field, String uid) async {
     // print('HERE IS THE SNAPSHOT');
+    print('wesh');
     var snapshots = await ref.where(field, isEqualTo: uid).get();
     print(snapshots.docs.map((doc) => doc.data()).toList());
     return snapshots.docs
@@ -213,7 +214,7 @@ class UserData<T> {
     }
   }
 
-  Future<void> upsert(Map data) async {
+  Future upsert(Map data) async {
     User user = _auth.currentUser;
     Document<T> ref = Document(path: '$collection/${user.uid}');
     return ref.upsert(data);

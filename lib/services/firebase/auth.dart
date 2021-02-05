@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tinyhabits/helpers/toast.dart';
 import 'package:tinyhabits/models/profile.dart';
 
 class AuthService {
@@ -33,6 +34,20 @@ class AuthService {
       }
       return null;
     }
+  }
+
+  Future changePassword(String password) async {
+    //Create an instance of the current user.
+    User user = getUser();
+
+    //Pass in the password to updatePassword.
+    return user.updatePassword(password).then((_) {
+      toast(
+          "Your password changed Succesfully don't forget to login and logout ");
+    }).catchError((err) {
+      toast("You can't change the Password" + err.toString());
+      //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
+    });
   }
 
   Future signUpWithEmailandPassword(

@@ -18,17 +18,16 @@ class CreateHabit extends StatefulWidget {
 class _CreateHabitState extends State<CreateHabit> {
   AuthService _auth = AuthService();
   List<String> _afterpropostions = [
-    'Bursh my teeth',
-    'had dinner',
+    'Meditate 15 mins',
+    'Read 10 pages',
     'finish my gym',
     'read my book'
   ];
 
   List<String> _willpropostions = [
-    'Meditate for 5 mins',
-    'Go for a walk',
-    'Read for 30 mins',
-    'Buy groceries'
+    'Currently brewing',
+    'About to brew',
+    'Enjoying my brew now',
   ];
 
   bool loading = false;
@@ -133,7 +132,7 @@ class _CreateHabitState extends State<CreateHabit> {
                     height: 20,
                   ),
                   Text(
-                    'Then, I will,',
+                    'You set your goals.  Now enjoy that brew.',
                     style: SansHeading,
                   ),
                   SizedBox(
@@ -146,7 +145,7 @@ class _CreateHabitState extends State<CreateHabit> {
                     ],
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.person),
-                      hintText: 'Will do habit',
+                      hintText: 'How are you enjoying your coffee today? ',
                     ),
                     validator: (value) {
                       if (value == '') {
@@ -352,7 +351,7 @@ class _CreateHabitState extends State<CreateHabit> {
                                 dateGoals: [],
                                 color: _selectedColor.value,
                                 startDate: DateTime(time.year, time.month,
-                                    time.day, 12, 0, 0, 0, 0),
+                                    time.day, 0, 0, 0, 0, 0),
                               );
 
                               await Global.habitRef.upsert(goal.toMap());

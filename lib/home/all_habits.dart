@@ -11,6 +11,7 @@ import 'package:tinyhabits/models/goal.dart';
 import 'package:tinyhabits/services/firebase/auth.dart';
 import 'package:tinyhabits/services/firebase/global.dart';
 import 'package:tinyhabits/styles/styles.dart';
+import 'package:tinyhabits/wrapper.dart';
 
 class Calendar extends StatefulWidget {
   @override
@@ -32,8 +33,6 @@ class _CalendarState extends State<Calendar> {
     _calendarController.dispose();
     super.dispose();
   }
-
-  AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -123,28 +122,6 @@ class _CalendarState extends State<Calendar> {
                     );
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30.0),
-                child: RaisedButton(
-                  color: Colors.red,
-                  elevation: 0,
-                  textColor: Colors.white,
-                  onPressed: () async {
-                    await _auth.signOut();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(),
-                      Text(
-                        'LOGOUT',
-                        style: WhiteSubtitle,
-                      ),
-                      Icon(Icons.close)
-                    ],
-                  ),
-                ),
-              )
 
               // Expanded(
               //     child: FutureBuilder(
