@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
 import 'package:table_calendar/table_calendar.dart';
+import 'package:tinyhabits/home/empty_screen.dart';
 import 'package:tinyhabits/home/habit_stats.dart';
 import 'package:tinyhabits/models/goal.dart';
 import 'package:tinyhabits/services/firebase/auth.dart';
@@ -91,10 +92,10 @@ class _CalendarState extends State<Calendar> {
                             decoration: BoxDecoration(
                                 color:
                                     completed.length == currentDateHabits.length
-                                        ? Colors.green
+                                        ? Color(0xff90ee90)
                                         : completed.length > 0
-                                            ? Colors.yellow
-                                            : Colors.red,
+                                            ? Colors.yellow.withOpacity(0.7)
+                                            : Colors.red.withOpacity(0.7),
                                 borderRadius: BorderRadius.circular(
                                   40,
                                 )),
@@ -104,11 +105,13 @@ class _CalendarState extends State<Calendar> {
                       }),
                       onDaySelected: (date, events, options) {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HabitStats(
-                                      selectedDate: date,
-                                    )));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HabitStats(
+                              selectedDate: date,
+                            ),
+                          ),
+                        );
                       },
                       calendarStyle: CalendarStyle(
                         todayColor: StarYellow,
@@ -121,6 +124,28 @@ class _CalendarState extends State<Calendar> {
                       child: CircularProgressIndicator(),
                     );
                 },
+              ),
+
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 30.0, bottom: 40),
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmptyScreen(),
+                      ),
+                    ),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        'assets/images/coffee-cup.svg',
+                        height: 180,
+                      ),
+                    ),
+                  ),
+                ),
               ),
 
               // Expanded(
